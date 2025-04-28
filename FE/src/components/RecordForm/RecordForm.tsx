@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+
 const RecordForm: React.FC = () => {
   const [date, setDate] = useState<string>();
   const [principal, setPrincipal] = useState<string>("");
