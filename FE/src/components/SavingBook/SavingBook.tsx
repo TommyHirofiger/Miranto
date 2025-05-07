@@ -1,7 +1,20 @@
-import { useSavingRecordContext} from "../../contexts/SavingRecordContext";
+import { useMemo } from "react";
+import { useSavingRecordContext } from "../../contexts/SavingRecordContext";
 
 const SavingBook: React.FC = () => {
-    const {savingRecord, } = useSavingRecordContext();
+  const { savingRecord } = useSavingRecordContext();
+  const totalAmmount = useMemo(() => {
+    return savingRecord.reduce((sum, record) => {
+      const years = Math.floor(
+        (new Date().getTime() - new Date(record.date).getTime()) /
+          (1000 * 60 * 60 * 24 * 365)
+      );
+      const principal = parseFloat(record.principal);
+      const rate = parseFloat(record.rate) / 100;
+      const nowValue: number = principal * Math.pow(1 + rate, years);
+      return Math.floor(sum + nowValue);
+    }, 0);
+  }, [savingRecord]);
 
   return (
     <>
@@ -24,6 +37,7 @@ const SavingBook: React.FC = () => {
           ))}
         </tbody>
       </table>
+      <h3>現在の合計金額：{totalAmmount}円</h3>
     </>
   );
 };
