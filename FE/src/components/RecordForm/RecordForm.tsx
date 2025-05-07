@@ -15,6 +15,22 @@ const RecordForm: React.FC = () => {
   });
 
   const handleAddRecord = () => {
+    const principal = parseFloat(formData.principal);
+    if (isNaN(principal) || principal < 0) {
+      setErrorMessage("金額は0以上の数字を入力してください");
+      return;
+    }
+
+    const rate = formData.rate.trim();
+
+    // 小数第3位を含んでいたらエラーにする
+    const rateValid = /^\d+(\.\d{1,2})?$/.test(rate) && parseFloat(rate) >= 0;
+
+    if (!rateValid) {
+      setErrorMessage("利率は0以上の数値で、小数点以下2桁までにしてください");
+      return;
+    }
+
     if (!formData.date || !formData.principal || !formData.rate) {
       setErrorMessage("入力に誤りがあります");
       return;
@@ -42,6 +58,7 @@ const RecordForm: React.FC = () => {
         <input
           type="number"
           value={formData.principal}
+          min="0"
           onChange={(e) =>
             setFormData({ ...formData, principal: e.target.value })
           }
@@ -51,7 +68,9 @@ const RecordForm: React.FC = () => {
       <div>
         <input
           type="number"
+          step="0.01"
           value={formData.rate}
+          min="0"
           onChange={(e) => setFormData({ ...formData, rate: e.target.value })}
         />
         %
