@@ -14,7 +14,7 @@ const RecordForm: React.FC = () => {
     rate: "",
   });
 
-  const handleAddRecord = () => {
+  const handleAddRecord = async () => {
     const principal = parseFloat(formData.principal);
     if (isNaN(principal) || principal < 0) {
       setErrorMessage("金額は0以上の数字を入力してください");
@@ -37,6 +37,16 @@ const RecordForm: React.FC = () => {
     }
 
     addRecord(formData);
+    await fetch("http://localhost:3000/recors", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: "test123",
+        ...formData,
+      }),
+    });
     setFormData({
       date: "",
       principal: "",
