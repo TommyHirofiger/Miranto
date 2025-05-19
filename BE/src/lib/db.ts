@@ -1,9 +1,14 @@
 // lib/dynamodb.ts
-import AWS from "aws-sdk";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
-export const dynamoDb = new AWS.DynamoDB.DocumentClient({
+const client = new DynamoDBClient({
   region: "us-west-2",
-  endpoint: "http://localhost:8000",
-  accessKeyId: "dummy",
-  secretAccessKey: "dummy",
+  endpoint: "http://127.0.0.1:8000",
+  credentials: {
+    accessKeyId: "dummy",
+    secretAccessKey: "dummy",
+  },
 });
+
+export const dynamoDb = DynamoDBDocumentClient.from(client);

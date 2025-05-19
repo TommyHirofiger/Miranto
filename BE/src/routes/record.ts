@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
+import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { dynamoDb } from "../lib/db";
 
 const router = express.Router();
@@ -20,12 +21,12 @@ const recordRouter = router.post("/", async (req: Request, res: any) => {
   };
 
   try {
-    await dynamoDb
-      .put({
+    await dynamoDb.send(
+      new PutCommand({
         TableName: "SavingRecords",
         Item: item,
       })
-      .promise();
+    );
 
     res.status(200).json({ message: "Record Saved!", item });
   } catch (error) {
