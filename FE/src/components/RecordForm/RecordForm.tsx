@@ -37,7 +37,7 @@ const RecordForm: React.FC = () => {
     }
 
     addRecord(formData);
-    await fetch("http://localhost:3000/recors", {
+    await fetch("http://localhost:3000/records", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
