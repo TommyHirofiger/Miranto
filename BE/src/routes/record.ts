@@ -1,8 +1,9 @@
 import express from "express";
-import { postRecord } from "../controllers/recordController";
+import { postRecord, getRecord } from "../controllers/recordController";
 
 const router = express.Router();
 
 router.post("/", postRecord);
+router.get("/", getRecord);
 
 export default router;

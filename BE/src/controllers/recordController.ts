@@ -20,3 +20,18 @@ export const postRecord = async (req: Request, res: any) => {
     res.status(500).json({ error: "Failed to save record", detail: error });
   }
 };
+
+export const getRecord = async (req: Request, res: any) => {
+  const userId = req.body.userId;
+
+  if (!userId) {
+    return res.status(400).json({ error: "Missing userId !!" });
+  }
+
+  try {
+    const item = await recordServices.fetchRecord(userId);
+    res.status(201).json({ message: "Get a list is succeeded!!" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get record", detail: error });
+  }
+};
