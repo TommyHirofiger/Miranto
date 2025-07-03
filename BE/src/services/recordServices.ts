@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { PutCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
+import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { dynamoDb } from "../lib/db";
 
 export const createRecord = async (data: {
@@ -24,14 +24,15 @@ export const createRecord = async (data: {
 };
 
 export const fetchRecord = async (userId: string) => {
-  const getCommand = new GetCommand({
+  const fetchCommand = new QueryCommand({
     TableName: "SavingRecords",
-    Key: {
-      userId: userId,
+    KeyConditionExpression: "userId = :uid",
+    ExpressionAttributeValues: {
+      ":uid": userId,
     },
   });
 
-  const response = await dynamoDb.send(getCommand);
+  const response = await dynamoDb.send(fetchCommand);
 
-  console.log(response);
+  return response.Items;
 };

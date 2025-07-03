@@ -1,10 +1,25 @@
-import { useMemo } from "react";
-import { useSavingRecordContext } from "../../contexts/SavingRecordContext";
+import { useEffect, useMemo, useState } from "react";
+import {
+  useSavingRecordContext,
+  SavedRecord,
+} from "../../contexts/SavingRecordContext";
 
 const SavingBook: React.FC = () => {
-  const { savingRecord } = useSavingRecordContext();
+  const { savedRecord, setSavedRecord } = useSavingRecordContext();
+
+  useEffect(() => {
+    const fetchRecords = async () => {
+      const res = await fetch("http://localhost:3000/records?userId=test123");
+      const data = await res.json();
+      setSavedRecord(data);
+      console.log(data);
+    };
+
+    fetchRecords();
+  }, []);
+
   const totalAmmount = useMemo(() => {
-    return savingRecord.reduce((sum, record) => {
+    return savedRecord.reduce((sum, record) => {
       const years = Math.floor(
         (new Date().getTime() - new Date(record.date).getTime()) /
           (1000 * 60 * 60 * 24 * 365)
@@ -14,7 +29,7 @@ const SavingBook: React.FC = () => {
       const nowValue: number = principal * Math.pow(1 + rate, years);
       return Math.floor(sum + nowValue);
     }, 0);
-  }, [savingRecord]);
+  }, [savedRecord]);
 
   return (
     <>
@@ -28,7 +43,7 @@ const SavingBook: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {savingRecord.map((record, index) => (
+          {savedRecord.map((record, index) => (
             <tr key={index}>
               <td>{record.date}</td>
               <td>{record.principal}</td>

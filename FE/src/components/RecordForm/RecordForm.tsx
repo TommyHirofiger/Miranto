@@ -5,7 +5,13 @@ import {
 } from "../../contexts/SavingRecordContext";
 
 const RecordForm: React.FC = () => {
-  const { savingRecord, addRecord } = useSavingRecordContext();
+  const {
+    savingRecord,
+    addRecord,
+    setSavingRecord,
+    savedRecord,
+    setSavedRecord,
+  } = useSavingRecordContext();
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const [formData, setFormData] = useState<SavingRecord>({
@@ -36,23 +42,34 @@ const RecordForm: React.FC = () => {
       return;
     }
 
-    addRecord(formData);
-    await fetch("http://localhost:3000/records", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId: "test123",
-        ...formData,
-      }),
-    });
-    setFormData({
-      date: "",
-      principal: "",
-      rate: "",
-    });
-    setErrorMessage("");
+    try {
+      addRecord(formData);
+      await fetch("http://localhost:3000/records", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: "test123",
+          ...formData,
+        }),
+      });
+
+      const response = await fetch(
+        "http://localhost:3000/records?userId=test123"
+      );
+      const data = await response.json();
+      setSavedRecord(data);
+      setFormData({
+        date: "",
+        principal: "",
+        rate: "",
+      });
+      setErrorMessage("");
+    } catch (error) {
+      console.error("Submit or Get Error", error);
+      setErrorMessage("Error occurred, please retry after few seconds");
+    }
   };
 
   return (

@@ -22,15 +22,15 @@ export const postRecord = async (req: Request, res: any) => {
 };
 
 export const getRecord = async (req: Request, res: any) => {
-  const userId = req.body.userId;
+  const userId = req.query.userId as string;
 
   if (!userId) {
     return res.status(400).json({ error: "Missing userId !!" });
   }
 
   try {
-    const item = await recordServices.fetchRecord(userId);
-    res.status(201).json({ message: "Get a list is succeeded!!" });
+    const data = await recordServices.fetchRecord(userId);
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ error: "Failed to get record", detail: error });
   }
