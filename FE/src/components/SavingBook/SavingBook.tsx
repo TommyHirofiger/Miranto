@@ -1,8 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import {
-  useSavingRecordContext,
-  SavedRecord,
-} from "../../contexts/SavingRecordContext";
+import { useEffect, useMemo } from "react";
+import { useSavingRecordContext } from "../../contexts/SavingRecordContext";
 
 const SavingBook: React.FC = () => {
   const { savedRecord, setSavedRecord } = useSavingRecordContext();
@@ -12,11 +9,21 @@ const SavingBook: React.FC = () => {
       const res = await fetch("http://localhost:3000/records?userId=test123");
       const data = await res.json();
       setSavedRecord(data);
-      console.log(data);
     };
 
     fetchRecords();
   }, []);
+
+  const sortedRecords = useMemo(() => {
+    return [...savedRecord].sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+
+      if (dateA !== dateB) return dateA - dateB;
+
+      return a.recordId.localeCompare(b.recordId);
+    });
+  }, [savedRecord]);
 
   const totalAmmount = useMemo(() => {
     return savedRecord.reduce((sum, record) => {
@@ -43,7 +50,7 @@ const SavingBook: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {savedRecord.map((record, index) => (
+          {sortedRecords.map((record, index) => (
             <tr key={index}>
               <td>{record.date}</td>
               <td>{record.principal}</td>
