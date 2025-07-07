@@ -8,8 +8,8 @@ import SavingBook from "./components/SavingBook/SavingBook.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <InterestCalculator />
     <SavingRecordProvider>
-      <InterestCalculator />
       <RecordForm />
       <SavingBook />
     </SavingRecordProvider>

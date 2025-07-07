@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import { fetchRecords } from "../api/recordApi";
 
 export type SavingRecord = {
   date: string;
@@ -14,13 +15,9 @@ export type SavedRecord = {
   rate: string;
 };
 
-
 type SavingRecordContextType = {
-  savingRecord: SavingRecord[];
-  addRecord: (record: SavingRecord) => void;
-  setSavingRecord: (records: SavingRecord[]) => void;
-  savedRecord: SavedRecord[];
-  setSavedRecord: (records: SavedRecord[]) => void;
+  savedRecords: SavedRecord[];
+  fetchSavedRecords: (userId: string) => Promise<void>;
 };
 
 const SavingRecordContext = createContext<SavingRecordContextType | undefined>(
@@ -37,17 +34,15 @@ export const useSavingRecordContext = () => {
 const SavingRecordProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [savingRecord, setSavingRecord] = useState<SavingRecord[]>([]);
-  const [savedRecord, setSavedRecord] = useState<SavedRecord[]>([]);
+  const [savedRecords, setSavedRecords] = useState<SavedRecord[]>([]);
 
-  const addRecord = (record: SavingRecord) => {
-    return setSavingRecord([...savingRecord, record]);
+  const fetchSavedRecords = async (userId: string) => {
+    const res = await fetchRecords(userId);
+    setSavedRecords(res);
   };
 
   return (
-    <SavingRecordContext.Provider
-      value={{ savingRecord, addRecord, setSavingRecord, savedRecord, setSavedRecord }}
-    >
+    <SavingRecordContext.Provider value={{ savedRecords, fetchSavedRecords }}>
       {children}
     </SavingRecordContext.Provider>
   );

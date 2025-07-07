@@ -1,32 +1,21 @@
 import { useEffect, useMemo } from "react";
 import { useSavingRecordContext } from "../../contexts/SavingRecordContext";
 
+const userId: string = import.meta.env.VITE_USER_ID;
+
 const SavingBook: React.FC = () => {
-  const { savedRecord, setSavedRecord } = useSavingRecordContext();
+  const { savedRecords, fetchSavedRecords } = useSavingRecordContext();
 
   useEffect(() => {
     const fetchRecords = async () => {
-      const res = await fetch("http://localhost:3000/records?userId=test123");
-      const data = await res.json();
-      setSavedRecord(data);
+      fetchSavedRecords(userId);
     };
 
     fetchRecords();
   }, []);
 
-  const sortedRecords = useMemo(() => {
-    return [...savedRecord].sort((a, b) => {
-      const dateA = new Date(a.date).getTime();
-      const dateB = new Date(b.date).getTime();
-
-      if (dateA !== dateB) return dateA - dateB;
-
-      return a.recordId.localeCompare(b.recordId);
-    });
-  }, [savedRecord]);
-
-  const totalAmmount = useMemo(() => {
-    return savedRecord.reduce((sum, record) => {
+  const totalAmount = useMemo(() => {
+    return savedRecords.reduce((sum, record) => {
       const years = Math.floor(
         (new Date().getTime() - new Date(record.date).getTime()) /
           (1000 * 60 * 60 * 24 * 365)
@@ -36,7 +25,7 @@ const SavingBook: React.FC = () => {
       const nowValue: number = principal * Math.pow(1 + rate, years);
       return Math.floor(sum + nowValue);
     }, 0);
-  }, [savedRecord]);
+  }, [savedRecords]);
 
   return (
     <>
@@ -50,7 +39,7 @@ const SavingBook: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {sortedRecords.map((record, index) => (
+          {savedRecords.map((record, index) => (
             <tr key={index}>
               <td>{record.date}</td>
               <td>{record.principal}</td>
@@ -59,7 +48,7 @@ const SavingBook: React.FC = () => {
           ))}
         </tbody>
       </table>
-      <h3>現在の合計金額：{totalAmmount}円</h3>
+      <h3>現在の合計金額：{totalAmount}円</h3>
     </>
   );
 };

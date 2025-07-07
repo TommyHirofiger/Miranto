@@ -3,15 +3,13 @@ import {
   useSavingRecordContext,
   SavingRecord,
 } from "../../contexts/SavingRecordContext";
+import { postRecord } from "../../api/recordApi";
+
+const userId: string = import.meta.env.VITE_USER_ID;
 
 const RecordForm: React.FC = () => {
-  const {
-    savingRecord,
-    addRecord,
-    setSavingRecord,
-    savedRecord,
-    setSavedRecord,
-  } = useSavingRecordContext();
+  const { fetchSavedRecords } = useSavingRecordContext();
+
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const [formData, setFormData] = useState<SavingRecord>({
@@ -43,23 +41,9 @@ const RecordForm: React.FC = () => {
     }
 
     try {
-      addRecord(formData);
-      await fetch("http://localhost:3000/records", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: "test123",
-          ...formData,
-        }),
-      });
+      await postRecord(userId, formData);
+      await fetchSavedRecords(userId);
 
-      const response = await fetch(
-        "http://localhost:3000/records?userId=test123"
-      );
-      const data = await response.json();
-      setSavedRecord(data);
       setFormData({
         date: "",
         principal: "",
@@ -103,7 +87,7 @@ const RecordForm: React.FC = () => {
         %
       </div>
       <div>
-        <button onClick={handleAddRecord}>登録</button>
+        <button onClick={handleAddRecord}>submit</button>
       </div>
       {errorMessage && (
         <p style={{ color: "red", fontWeight: "bold" }}>{errorMessage}</p>
